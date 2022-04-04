@@ -1,5 +1,6 @@
 import subprocess
 def consoleCommand(script):
+    print(script[0])
     process = subprocess.Popen(script, 
                            stdout=subprocess.PIPE,
                            universal_newlines=True)

@@ -4,6 +4,7 @@ import RPi.GPIO as GPIO
 import dht11
 import time
 
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.cleanup()
