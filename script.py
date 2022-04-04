@@ -7,7 +7,7 @@ class SimpleEcho(WebSocket):
         data = DecoderProtocole(self.data)
         print(data)
         data.decodeData()
-        print(data.typeData)
+        print(data.typeVal)
         for val in data.valueTab:
             print(val)
         self.send_message(self.data)

@@ -1,9 +1,9 @@
 class DecoderProtocole:
     def __init__(self, string):
-        self.data = data
+        self.string = string
     
     def decodeData(self):
-        split = self.data.split(":")
+        split = self.string.split(":")
         self.typeVal = split[0]
         self.valueTab = split[1].split(";")
         """if(splitVal == 'button'):
