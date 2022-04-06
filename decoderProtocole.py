@@ -4,19 +4,8 @@ class DecoderProtocole:
     
     def decodeData(self):
         split = self.string.split(":")
-        self.typeVal = split[0]
-        self.valueTab = split[1].split(";")
-        """if(splitVal == 'button'):
-            self.buttonVal()
-        elif(splitVal == 'temp'):
-            self.tempVal()
-    
-    def buttonVal(self):
-        if(self.valueTab[0]):
-            self.value = True
-        else:
-            self.value = False
-    
-    def tempVal(self):
-        for val in self.valueTab:
-            self.value = """
+        self.typeVal = split[0].split(".")[0]
+        self.name = split[0].split(".")[1]
+        self.keyValues = list(map(lambda x: x.split(">"), split[1].split(";")))
+        
+        

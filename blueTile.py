@@ -20,10 +20,16 @@ from blue_st_sdk.features.audio.adpcm.feature_audio_adpcm_sync import FeatureAud
 #
 # On Linux:
 #   export PYTHONPATH=/home/<user>/BlueSTSDK_Python
-
+"""
+python blueTile.py BCN-727 4
+"""
 
 # CONSTANTS
-ws = create_connection("ws://localhost:8000")
+#ws = create_connection("ws://localhost:8000")
+initX = 0
+initY = 0
+initZ = 0
+initBool = True
 stSensorName = sys.argv[1]
 print(sys.argv[2].split(","))
 stSensorPropsStr = sys.argv[2].split(",")
@@ -110,12 +116,30 @@ class MyFeatureListener(FeatureListener):
     # @param sample  Data extracted from the feature.
     #
     def on_update(self, feature, sample):
-
+        global initBool,initX,initY,initZ
         if self._notifications < NOTIFICATIONS:
             self._notifications += 1
-            print(feature)
-            print(sample.get_description()[0].get_name())
-            ws.send(BuilderProtocole("blueTile",[sample.get_description()[0].get_name()+">"+str(sample.get_data()[0])]).build())
+            #print(feature)
+            x = sample.get_data()[0]
+            y = sample.get_data()[1]
+            z = sample.get_data()[2]
+            if(initBool):
+                initX = x
+                initY = y
+                initZ = z
+                initBool = False
+            if(initZ+200 > z > initZ-800):
+                if(y < initY-300):
+                    print("gauche")
+                elif(y > initY+300):
+                    print("droite")
+                if(x < initX-300):
+                    print("bas")
+                elif(x > initX+300):
+                    print("haut")
+                
+            #print(sample.get_data()[0]+sample.get_data()[0])
+            #ws.send(BuilderProtocole("blueTile",[sample.get_description()[0].get_name()+">"+str(sample.get_data()[0])]).build())
 
 
 # MAIN APPLICATION
@@ -125,7 +149,7 @@ class MyFeatureListener(FeatureListener):
 #
 def main(argv):
     
-    print(ws.recv())
+    #print(ws.recv())
     try:
         # Creating Bluetooth Manager.
         manager = Manager.instance()
@@ -175,9 +199,8 @@ def main(argv):
             while True:
                 # Getting features.
                 features = device.get_features()
-                print('\nFeatures:')
                 i = 1
-                for feature in features:
+                """for feature in features:
                     if isinstance(feature, FeatureAudioADPCM):
                         audio_feature = feature
                         print('%d,%d) %s' % (i, i + 1, "Audio & Sync"))
@@ -186,7 +209,7 @@ def main(argv):
                         audio_sync_feature = feature
                     else:
                         print('%d) %s' % (i, feature.get_name()))
-                        i += 1
+                        i += 1"""
 
                 # Selecting a feature.
 
@@ -229,7 +252,7 @@ def main(argv):
         try:
             # Exiting.
             print('\nExiting...\n')
-            ws.close()
+            #ws.close()
             sys.exit(0)
         except SystemExit:
             os._exit(0)

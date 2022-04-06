@@ -1,21 +1,18 @@
+#typeData.name:prop>num;prop>num;
 class BuilderProtocole:
-    def __init__(self,typeData,values):
+    def __init__(self,typeData,name,keyValues):
         self.typeData = typeData
-        self.values = values
+        self.name = name
+        self.keyValues = keyValues
     def build(self):
-        print("data : "+self.typeData+", "+str(self.values[0]))
-        string = self.typeData + ":"
+        string = self.typeData + "." + self.name + ":"
         mult = False
-        if(len(self.values)>1):
+        if(len(self.keyValues)>1):
             mult = True
-        print("before create : "+string)
-        for val in self.values:
-            string += str(val)
+        for keyVal in self.keyValues:
+            string += keyVal[0] + ">" + str(keyVal[1])
             if(mult):
                 string += ";"
-        print("after create : "+string)
         if(string[-1] == ";"):
-            print("before -1 : "+string)
             string = string[:len(string)-1]
-            print("after -1 : "+string)
         return string
