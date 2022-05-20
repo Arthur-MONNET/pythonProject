@@ -1,0 +1,24 @@
+{
+  "name": "pythonproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "advertising_nodejs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arthur-MONNET/pythonProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arthur-MONNET/pythonProject/issues"
+  },
+  "homepage": "https://github.com/Arthur-MONNET/pythonProject#readme",
+  "dependencies": {
+    "@abandonware/noble": "^1.9.2-15",
+    "websocket": "^1.0.34",
+    "ws": "^8.6.0"
+  }
+}

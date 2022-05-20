@@ -21,20 +21,22 @@ from blue_st_sdk.features.audio.adpcm.feature_audio_adpcm_sync import FeatureAud
 # On Linux:
 #   export PYTHONPATH=/home/<user>/BlueSTSDK_Python
 """
-python blueTile.py BCN-727 4
+sudo python blueTile.py BCN-727 5
 """
 
 # CONSTANTS
-#ws = create_connection("ws://localhost:8000")
+ws = create_connection("ws://localhost:8000")
+print(ws.recv())
 initX = 0
 initY = 0
 initZ = 0
-initBool = True
+sensibility = 100
+pos = "None"
+initBool = 1
+double = False
 stSensorName = sys.argv[1]
-print(sys.argv[2].split(","))
 stSensorPropsStr = sys.argv[2].split(",")
 stSensorProps = list(map(int, stSensorPropsStr))
-print(stSensorProps)
 # Bluetooth Scanning time in seconds (optional).
 SCANNING_TIME_s = 5
 
@@ -57,9 +59,10 @@ class MyManagerListener(ManagerListener):
     # @param enabled True if a new discovery starts, False otherwise.
     #
     def on_discovery_change(self, manager, enabled):
-        print('Discovery %s.' % ('started' if enabled else 'stopped'))
+        #print('Discovery %s.' % ('started' if enabled else 'stopped'))
         if not enabled:
-            print()
+            #print()
+            pass
 
     #
     # This method is called whenever a new node is discovered.
@@ -68,7 +71,8 @@ class MyManagerListener(ManagerListener):
     # @param node    New node discovered.
     #
     def on_node_discovered(self, manager, node):
-        print('New device discovered: %s.' % (node.get_name()))
+         #print('New device discovered: %s.' % (node.get_name()))
+        pass
 
 
 #
@@ -76,35 +80,19 @@ class MyManagerListener(ManagerListener):
 # has updated its status.
 #
 class MyNodeListener(NodeListener):
-
-    #
-    # To be called whenever a node connects to a host.
-    #
-    # @param node Node that has connected to a host.
-    #
+    pass
     def on_connect(self, node):
-        print('Device %s connected.' % (node.get_name()))
-
-    #
-    # To be called whenever a node disconnects from a host.
-    #
-    # @param node       Node that has disconnected from a host.
-    # @param unexpected True if the disconnection is unexpected, False otherwise
-    #                   (called by the user).
-    #
+        pass
+        #print('Device %s connected.' % (node.get_name()))
     def on_disconnect(self, node, unexpected=False):
-        print('Device %s disconnected%s.' % \
-              (node.get_name(), ' unexpectedly' if unexpected else ''))
-        if unexpected:
+        global double
+        print('Device %s disconnected%s.' % (node.get_name(), ' unexpectedly' if unexpected else ''))
+        if unexpected and not double:
             # Exiting.
-            print('\nExiting...\n')
-            sys.exit(0)
-
-
-#
-# Implementation of the interface used by the Feature class to notify that a
-# feature has updated its data.
-#
+            double = True
+            main(sys.argv[1:])
+            time.sleep(1)
+            double = False
 class MyFeatureListener(FeatureListener):
     _notifications = 0
     """Counting notifications to print only the desired ones."""
@@ -116,28 +104,39 @@ class MyFeatureListener(FeatureListener):
     # @param sample  Data extracted from the feature.
     #
     def on_update(self, feature, sample):
-        global initBool,initX,initY,initZ
+        global initBool,initX,initY,initZ,pos
         if self._notifications < NOTIFICATIONS:
             self._notifications += 1
             #print(feature)
             x = sample.get_data()[0]
             y = sample.get_data()[1]
             z = sample.get_data()[2]
-            if(initBool):
+            if(initBool==2):
                 initX = x
                 initY = y
                 initZ = z
-                initBool = False
-            if(initZ+200 > z > initZ-800):
-                if(y < initY-300):
-                    print("gauche")
-                elif(y > initY+300):
-                    print("droite")
-                if(x < initX-300):
-                    print("bas")
-                elif(x > initX+300):
-                    print("haut")
-                
+                print('x : '+str(x)+'|y : '+str(y)+'|z : '+str(z))
+            if(y < initY-sensibility):
+                if pos != "right":
+                    pos = "right"
+                    ws.send(BuilderProtocole("blueTile",sys.argv[1],[["pos","right"]]).build())
+                    time.sleep(2)
+            elif(y > initY+sensibility):
+                if pos != "left":
+                    pos = "left"
+                    ws.send(BuilderProtocole("blueTile",sys.argv[1],[["pos","left"]]).build())
+                    time.sleep(2)
+            elif(x < initX-sensibility):
+                if pos != "bottom":
+                    pos = "bottom"
+                    ws.send(BuilderProtocole("blueTile",sys.argv[1],[["pos","bottom"]]).build())
+                    time.sleep(2)
+            elif(x > initX+sensibility):
+                if pos != "top":
+                    pos = "top"
+                    ws.send(BuilderProtocole("blueTile",sys.argv[1],[["pos","top"]]).build())
+                    time.sleep(2)
+            initBool+=1
             #print(sample.get_data()[0]+sample.get_data()[0])
             #ws.send(BuilderProtocole("blueTile",[sample.get_description()[0].get_name()+">"+str(sample.get_data()[0])]).build())
 
@@ -158,7 +157,7 @@ def main(argv):
 
         while True:
             # Synchronous discovery of Bluetooth devices.
-            print('Scanning Bluetooth devices...\n')
+            #print('Scanning Bluetooth devices...\n')
             manager.discover(SCANNING_TIME_s)
 
             # Alternative 1: Asynchronous discovery of Bluetooth devices.
@@ -174,9 +173,9 @@ def main(argv):
 
             # Listing discovered devices.
             if not discovered_devices:
-                print('No Bluetooth devices found. Exiting...\n')
-                sys.exit(0)
-            print('Available Bluetooth devices:')
+                #print('No Bluetooth devices found.\n')
+                continue
+            #print('Available Bluetooth devices:')
             i = 1
             # Selecting a device.
 
@@ -191,9 +190,9 @@ def main(argv):
             device.add_listener(node_listener)
 
             # Connecting to the device.
-            print('Connecting to %s...' % (device.get_name()))
+            #print('Connecting to %s...' % (device.get_name()))
             if not device.connect():
-                print('Connection failed.\n')
+                #print('Connection failed.\n')
                 continue
 
             while True:
@@ -250,8 +249,6 @@ def main(argv):
 
     except KeyboardInterrupt:
         try:
-            # Exiting.
-            print('\nExiting...\n')
             #ws.close()
             sys.exit(0)
         except SystemExit:

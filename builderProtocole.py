@@ -16,3 +16,10 @@ class BuilderProtocole:
         if(string[-1] == ";"):
             string = string[:len(string)-1]
         return string
+
+class ConnectionBuilderProtocole:
+    def __init__(self,typeData,name):
+        self.typeData = typeData
+        self.name = name
+    def build(self):
+        return "connection:" + self.typeData + "." + self.name
