@@ -26,7 +26,6 @@ sudo python blueTile.py BCN-727 5
 
 # CONSTANTS
 ws = create_connection("ws://localhost:8000")
-print(ws.recv())
 initX = 0
 initY = 0
 initZ = 0
@@ -39,7 +38,7 @@ stSensorPropsStr = sys.argv[2].split(",")
 stSensorProps = list(map(int, stSensorPropsStr))
 # Bluetooth Scanning time in seconds (optional).
 SCANNING_TIME_s = 5
-
+print(ws.recv)
 # Number of notifications to get before disabling them.
 NOTIFICATIONS = 1
 
@@ -59,9 +58,9 @@ class MyManagerListener(ManagerListener):
     # @param enabled True if a new discovery starts, False otherwise.
     #
     def on_discovery_change(self, manager, enabled):
-        #print('Discovery %s.' % ('started' if enabled else 'stopped'))
+        #print("**BLUETILE**  => "+'Discovery %s.' % ('started' if enabled else 'stopped'))
         if not enabled:
-            #print()
+            #print("**BLUETILE**  => "+)
             pass
 
     #
@@ -71,7 +70,7 @@ class MyManagerListener(ManagerListener):
     # @param node    New node discovered.
     #
     def on_node_discovered(self, manager, node):
-         #print('New device discovered: %s.' % (node.get_name()))
+         #print("**BLUETILE**  => "+'New device discovered: %s.' % (node.get_name()))
         pass
 
 
@@ -83,10 +82,10 @@ class MyNodeListener(NodeListener):
     pass
     def on_connect(self, node):
         pass
-        #print('Device %s connected.' % (node.get_name()))
+        #print("**BLUETILE**  => "+'Device %s connected.' % (node.get_name()))
     def on_disconnect(self, node, unexpected=False):
         global double
-        print('Device %s disconnected%s.' % (node.get_name(), ' unexpectedly' if unexpected else ''))
+        print('**BLUETILE**  => Device %s disconnected%s.' % (node.get_name(), ' unexpectedly' if unexpected else ''))
         if unexpected and not double:
             # Exiting.
             double = True
@@ -107,7 +106,7 @@ class MyFeatureListener(FeatureListener):
         global initBool,initX,initY,initZ,pos
         if self._notifications < NOTIFICATIONS:
             self._notifications += 1
-            #print(feature)
+            #print("**BLUETILE**  => "+feature)
             x = sample.get_data()[0]
             y = sample.get_data()[1]
             z = sample.get_data()[2]
@@ -115,7 +114,7 @@ class MyFeatureListener(FeatureListener):
                 initX = x
                 initY = y
                 initZ = z
-                print('x : '+str(x)+'|y : '+str(y)+'|z : '+str(z))
+                print("**BLUETILE**  => "+'x : '+str(x)+'|y : '+str(y)+'|z : '+str(z))
             if(y < initY-sensibility):
                 if pos != "right":
                     pos = "right"
@@ -137,7 +136,7 @@ class MyFeatureListener(FeatureListener):
                     ws.send(BuilderProtocole("blueTile",sys.argv[1],[["pos","top"]]).build())
                     time.sleep(2)
             initBool+=1
-            #print(sample.get_data()[0]+sample.get_data()[0])
+            #print("**BLUETILE**  => "+sample.get_data()[0]+sample.get_data()[0])
             #ws.send(BuilderProtocole("blueTile",[sample.get_description()[0].get_name()+">"+str(sample.get_data()[0])]).build())
 
 
@@ -148,7 +147,7 @@ class MyFeatureListener(FeatureListener):
 #
 def main(argv):
     
-    #print(ws.recv())
+    #print("**BLUETILE**  => "+ws.recv())
     try:
         # Creating Bluetooth Manager.
         manager = Manager.instance()
@@ -157,7 +156,7 @@ def main(argv):
 
         while True:
             # Synchronous discovery of Bluetooth devices.
-            #print('Scanning Bluetooth devices...\n')
+            #print("**BLUETILE**  => "+'Scanning Bluetooth devices...\n')
             manager.discover(SCANNING_TIME_s)
 
             # Alternative 1: Asynchronous discovery of Bluetooth devices.
@@ -173,9 +172,9 @@ def main(argv):
 
             # Listing discovered devices.
             if not discovered_devices:
-                #print('No Bluetooth devices found.\n')
+                #print("**BLUETILE**  => "+'No Bluetooth devices found.\n')
                 continue
-            #print('Available Bluetooth devices:')
+            #print("**BLUETILE**  => "+'Available Bluetooth devices:')
             i = 1
             # Selecting a device.
 
@@ -190,9 +189,9 @@ def main(argv):
             device.add_listener(node_listener)
 
             # Connecting to the device.
-            #print('Connecting to %s...' % (device.get_name()))
+            #print("**BLUETILE**  => "+'Connecting to %s...' % (device.get_name()))
             if not device.connect():
-                #print('Connection failed.\n')
+                #print("**BLUETILE**  => "+'Connection failed.\n')
                 continue
 
             while True:
@@ -202,12 +201,12 @@ def main(argv):
                 """for feature in features:
                     if isinstance(feature, FeatureAudioADPCM):
                         audio_feature = feature
-                        print('%d,%d) %s' % (i, i + 1, "Audio & Sync"))
+                        print("**BLUETILE**  => "+'%d,%d) %s' % (i, i + 1, "Audio & Sync"))
                         i += 1
                     elif isinstance(feature, FeatureAudioADPCMSync):
                         audio_sync_feature = feature
                     else:
-                        print('%d) %s' % (i, feature.get_name()))
+                        print("**BLUETILE**  => "+'%d) %s' % (i, feature.get_name()))
                         i += 1"""
 
                 # Selecting a feature.

@@ -3,7 +3,7 @@ from time import sleep
 import alsaaudio
 from datetime import datetime
 mix = alsaaudio.mixers()
-print(mix[0])
+print("**VOLUME**  => "+str(mix[0]))
 
 class VolumeSensor:
     clk = 17
@@ -23,7 +23,7 @@ class VolumeSensor:
         
     
     def start(self):
-        print(self.name , " is working !")
+        print("**VOLUME**  => " + self.name + " is working !")
         try:
             while True:
                 self.changeVolume()
@@ -46,7 +46,7 @@ class VolumeSensor:
                 if self.counter > 0:
                     self.counter -= 2
             self.mixer.setvolume(self.counter)
-            print(self.mixer.getvolume())
+            print("**VOLUME**  => "+ str(self.mixer.getvolume()))
             self.setSave()
             
         self.save()
@@ -64,7 +64,7 @@ class VolumeSensor:
     def save(self):
         delta = datetime.now() - self.lastChange
         if int(delta.total_seconds()) > 1 and self.isSave == False:
-            print("Save")
+            print("**VOLUME**  => "+"Save")
             file = open(self.saveFilePath, "w")
             file.write(f"{self.counter}")
             self.isSave = True

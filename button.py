@@ -30,5 +30,5 @@ try:
         
 except KeyboardInterrupt:
     GPIO.cleanup()
-    print("Quit the loop...")
+    print("**BUTTON:"+sys.argv[1]+"**  => "+"Quit the loop...")
 ws.close()
