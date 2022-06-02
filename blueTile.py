@@ -37,7 +37,7 @@ stSensorName = sys.argv[1]
 stSensorPropsStr = sys.argv[2].split(",")
 stSensorProps = list(map(int, stSensorPropsStr))
 # Bluetooth Scanning time in seconds (optional).
-SCANNING_TIME_s = 5
+SCANNING_TIME_s = 2
 print(ws.recv)
 # Number of notifications to get before disabling them.
 NOTIFICATIONS = 1
@@ -89,7 +89,7 @@ class MyNodeListener(NodeListener):
         if unexpected and not double:
             # Exiting.
             double = True
-            main(sys.argv[1:])
+            main()
             time.sleep(1)
             double = False
 class MyFeatureListener(FeatureListener):
@@ -145,7 +145,7 @@ class MyFeatureListener(FeatureListener):
 #
 # Main application.
 #
-def main(argv):
+def main():
     
     #print("**BLUETILE**  => "+ws.recv())
     try:
@@ -191,7 +191,7 @@ def main(argv):
             # Connecting to the device.
             #print("**BLUETILE**  => "+'Connecting to %s...' % (device.get_name()))
             if not device.connect():
-                #print("**BLUETILE**  => "+'Connection failed.\n')
+                #print("**BLUETILE**  => "+'Connection failed.\n')s
                 continue
 
             while True:
@@ -254,5 +254,5 @@ def main(argv):
             os._exit(0)
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
 

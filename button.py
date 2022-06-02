@@ -14,7 +14,7 @@ GPIO.setup(int(sys.argv[2]), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 ws = create_connection("ws://localhost:8000")
 lastData = ""
-print(ws.recv())
+print("**BUTTON:"+sys.argv[1]+"**  => "+str(ws.recv()))
 ws.send(ConnectionBuilderProtocole("button",sys.argv[1]).build())
 try:
     while True:

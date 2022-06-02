@@ -14,6 +14,7 @@ pygame.init()
 pygame.mixer.init()
 stepper = 0
 work = False
+usbConnect = False
 blueTileBool = True
 class PL :
     pass
@@ -24,7 +25,7 @@ PL.pLeft = []
 PL.pRight = []
 PL.pTop = []
 PL.pPlaylist = []
-pathKey = "./audios/"
+pathKey = ""
 
 def setPlaylist():
     global PL
@@ -40,7 +41,6 @@ def setPlaylist():
     print("**SERVER**  => "+str(PL.top))
     print("**SERVER**  => "+str(PL.playlist))
     print("**SERVER**  => "+str(PL.souvenir))
-#setPlaylist()
 i=0
 
 controlSound = "start"
@@ -48,7 +48,7 @@ controlSound = "start"
 #context = Context()
 class SimpleEcho(WebSocket):
     def handle(self):
-        global controlSound, stepper, work, blueTileBool
+        global controlSound, stepper, work, pathKey, blueTileBool, usbConnect
         print("**SERVER**  => "+self.data)
         split = self.data.split(":")
         if(split[0] == "connection"):
@@ -57,7 +57,7 @@ class SimpleEcho(WebSocket):
             data = DecoderProtocole(self.data)
             data.decodeData()
             print("**SERVER**  => "+data.typeVal)
-            if data.typeVal == 'blueTile' and work :
+            if data.typeVal == 'blueTile' and work and usbConnect:
                 blueTileBool = True
                 print("**SERVER**  => "+data.keyValues[0][1])
                 pygame.mixer.music.load(pathKey + data.keyValues[0][1] + "/" + getattr(PL, data.keyValues[0][1])[0])
@@ -71,7 +71,7 @@ class SimpleEcho(WebSocket):
                     pygame.mixer.music.queue(pathKey + data.keyValues[0][1] + "/" + song)
                 print("**SERVER**  => "+"end2")
 
-            if data.typeVal == 'button' and data.name == "play" and work and blueTileBool:
+            if data.typeVal == 'button' and data.name == "play" and work and usbConnect and blueTileBool:
                 print("**SERVER**  => "+"button press")
                 if data.keyValues[0][1] == "True":
                     print("**SERVER**  => "+"button press : ", str(pygame.mixer.music.get_busy()))
@@ -95,6 +95,16 @@ class SimpleEcho(WebSocket):
                             pygame.mixer.music.unpause()
                             controlSound = "pause"
                             
+            if data.typeVal == 'usb':
+                if data.keyValues[0][1] == "True":
+                    print(data.keyValues)
+                    pathKey = data.keyValues[1][1]
+                    print("**SERVER**  => "+pathKey)
+                    setPlaylist()
+                    usbConnect = True
+                else :
+                    usbConnect = False
+                        
             if data.typeVal == 'button' and data.name == "onoff":
                 if data.keyValues[0][1] == "True":
                     if work :
@@ -106,12 +116,12 @@ class SimpleEcho(WebSocket):
             self.send_message(self.data)
 
     def connected(self):
-        #self.send_message('connected')
-        print("**SERVER**  ")#=> "+self.address, 'connected')
+        self.send_message('connected')
+        print("**SERVER**  => "+str(self.address), 'connected')
         
 
     def handle_close(self):
-        print("**SERVER** ")# => "+self.address, 'closed')
+        print("**SERVER**  => "+str(self.address), 'closed')
         
      
 server = WebSocketServer('', 8000, SimpleEcho)
